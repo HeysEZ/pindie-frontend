@@ -9,30 +9,31 @@ export const getData = async (url) => {
   } catch (error) {
     return error
   }
-}
+};
 
 export const isResponseOk = (response) => {
   return !(response instanceof Error)
-}
+};
 
 const normalizeDataObject = (obj) => {
-  return {
-    ...obj,
-    category: obj.categories,
-    users: obj.users_permissions_users,
-  }
-}
+  let str = JSON.stringify(obj)
+  
+  str = str.replaceAll('_id', 'id');
+  const newObj = JSON.parse(str)
+  const result = { ...newObj, category: newObj.categories }
+  return result;
+};
 
 export const normalizeData = (data) => {
   return data.map((item) => {
     return normalizeDataObject(item)
   })
-}
+};
 
 export const getNormalizedGameDataById = async (url, id) => {
   const data = await getData(`${url}/${id}`)
   return isResponseOk(data) ? normalizeDataObject(data) : data
-}
+};
 
 export const getNormalizedGamesDataByCategory = async (url, category) => {
   try {
@@ -44,7 +45,7 @@ export const getNormalizedGamesDataByCategory = async (url, category) => {
   } catch (error) {
     return error
   }
-}
+};
 
 export const authorize = async (url, data) => {
   try {
@@ -61,12 +62,12 @@ export const authorize = async (url, data) => {
   } catch (error) {
     return error
   }
-}
+};
 
 export const setJWT = (jwt) => {
   document.cookie = `jwt=${jwt}`
   localStorage.setItem('jwt', jwt)
-}
+};
 
 export const getJWT = () => {
   if (document.cookie === '') {
@@ -74,12 +75,12 @@ export const getJWT = () => {
   }
   const jwt = document.cookie.split(';').find((item) => item.includes('jwt'))
   return jwt ? jwt.split('=')[1] : null
-}
+};
 
 export const removeJWT = () => {
   document.cookie = 'jwt=;'
   localStorage.removeItem('jwt')
-}
+};
 
 export const getMe = async (url, jwt) => {
   try {
@@ -95,7 +96,7 @@ export const getMe = async (url, jwt) => {
   } catch (error) {
     return error
   }
-}
+};
 
 export const checkIfUserVoted = (game, userId) => {
   return game.users.find((user) => user.id === userId)
@@ -119,4 +120,4 @@ export const vote = async (url, jwt, usersArray) => {
   } catch (error) {
     return error
   }
-}
+};
